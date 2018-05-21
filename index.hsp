@@ -1,0 +1,123 @@
+// 時間を取得する
+#uselib "Kernel32.dll"
+#cfunc GetTickCount "GetTickCount"
+
+// クリックした場所のXY座標を取得するために必要
+#define ctype LOWORD(%1) (%1 & $FFFF)
+#define ctype HIWORD(%1) (%1 >> 16 & $FFFF)
+
+#module
+	// dim test, 5, 10 というものがあるとして、test(0)にある一次元配列を取得したいときに使用する
+	#deffunc getOneDimensionArray array two_dimension_array, int first_index, array return_array
+		dim return_array, length2(two_dimension_array)
+	
+		repeat length2(two_dimension_array)
+			return_array(cnt) = two_dimension_array(first_index, cnt)
+		loop
+		
+		return
+#global
+
+#module	
+	#deffunc mesCenter str message, int font_size
+		font "ＭＳ ゴシック", font_size
+		pos (ginfo_winx - font_size * strlen(message) / 2) / 2, (ginfo_winy - font_size) / 2
+		mes message
+		return
+#global
+	
+#module
+	#defcfunc mb_strlen str a
+		i = 0
+		sdim buf, strlen(a) * 2 + 2
+		
+		cnvstow buf, a
+		repeat
+			tmp = wpeek(buf, cnt * 2)
+			if tmp = 0 : break
+			i = i + 1
+		loop
+		return i
+#global
+
+#module	
+	// arrayは2次元配列にする
+	// この関数は数値のみのCSVファイルを扱うよ
+	#deffunc readCsvFile str filename, int max_column_num, array array 
+		notesel buf_read
+		noteload filename
+	
+		dim array, noteinfo(0), max_column_num
+	
+		for l, 0, noteinfo(0), 1
+			noteget str_line, l
+			split str_line, ",", str_parts
+	
+			for c, 0, length(str_parts), 1
+				array(l, c) = int(str_parts(c))
+			next
+		next
+	
+		buf_read = ""
+		return
+#global
+
+#module	
+	// 数字だけとか、保存するファイルは2バイト文字無しでお願いね
+	#deffunc saveCsvFile str filename, array array
+		notesel buf_save
+		
+		for l, 0, length(array), 1
+			str_line = ""
+			for c, 0, length2(array), 1
+				str_line += str(array(l, c)) + ","
+			next
+			poke str_line, strlen(str_line) - 1, 0
+			noteadd str_line, l
+		next
+		
+		notesave filename
+	
+		buf_save = ""
+		return
+#global
+	
+#module
+	#defcfunc getAllTime
+		return str(gettime(0)) + str(gettime(1)) + str(gettime(2)) + str(gettime(3)) + str(gettime(4)) + str(gettime(5)) + str(gettime(6)) + str(gettime(7))
+#global
+
+#module
+	#defcfunc makeDirectory str directory_name
+		mkdir directory_name
+		return directory_name
+#global
+
+#module
+	// 整数同士の割り算を行う場合に使う（結果は切り上げ）num1 / num2
+	#defcfunc divideCeil int num1, int num2
+		return int(double(num1) / double(num2) + 0.9)
+#global
+
+#module
+	// 枠だけ描くboxfです
+	#deffunc boxFrame int x1, int y1, int x2, int y2
+		color 0, 0, 0
+		boxf x1 - 1, y1 - 1, x2 + 1, y2 + 1
+		color 255, 255, 255
+		boxf x1, y1, x2, y2
+		return
+#global
+
+#module
+	#deffunc dimmix array arr
+		randomize
+	    mx = length(arr)
+	    repeat mx
+	        r        = cnt + rnd(mx - cnt)
+	        temp     = arr(r)
+	        arr(r)   = arr(cnt)
+	        arr(cnt) = temp
+	    loop
+	    return
+#global
