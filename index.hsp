@@ -84,7 +84,13 @@
 	
 #module
 	#defcfunc getAllTime
-		return str(gettime(0)) + str(gettime(1)) + str(gettime(2)) + str(gettime(3)) + str(gettime(4)) + str(gettime(5)) + str(gettime(6)) + str(gettime(7))
+		year = str(gettime(0))
+		month = fillZero(gettime(1))
+		date = fillZero(gettime(3))
+		hour = fillZero(gettime(4))
+		minute = fillZero(gettime(5))
+		second = fillZero(gettime(6))
+		return year + month + date + hour + minute + second
 #global
 
 #module
@@ -120,4 +126,14 @@
 	        arr(cnt) = temp
 	    loop
 	    return
+#global
+
+#module
+	// 2Œ…‚Å‚ ‚Á‚Ä—~‚µ‚¢‚Ì‚É1Œ…‚Å•Ô‚Á‚Ä‚­‚é‚±‚Æ‚ª‚ ‚é‚à‚Ì‚É‘Î‚µ‚Äg‚¤
+	// 5¨05(•¶š—ñ‚É‚µ‚Ü‚·)
+	#defcfunc fillZero int num
+		if (num < 10) {
+			return "0" + str(num)
+		}
+		return str(num)
 #global
